@@ -3,7 +3,7 @@ import path from "path";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../uploads"));
+    cb(null, '/tmp'); // Use the /tmp directory for storing temporary files in Lambda
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
