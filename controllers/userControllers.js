@@ -36,13 +36,9 @@ const registerUser = async (req, res, next) => {
 
 const loginUser = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { name, password } = req.body;
 
-    let user = await User.findOne({ email });
-
-    if (!user) {
-      throw new Error("Email not found");
-    }
+    let user = await User.findOne({ name });
 
     if (await user.comparePassword(password)) {
       return res.status(201).json({
