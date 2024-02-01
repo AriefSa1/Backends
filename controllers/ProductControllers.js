@@ -12,6 +12,7 @@ const createProduct = async (req, res, next) => {
             slug: uuidv4(),
             user: req.user._id,
             photo: [],
+            materials: [],
         });
 
         const createdProduct = await product.save();
@@ -34,11 +35,11 @@ const updateProduct = async (req, res, next) => {
         const upload = uploadPicture.array("postPicture", 5);
 
         const handleUpdateProduct = async (data) => {
-            const { title, description, slug, tags, categories } = JSON.parse(data);
+            const { title, description, slug, materials, categories } = JSON.parse(data);
             product.title = title || product.title;
             product.descriptions = description || product.descriptions;
             product.slug = slug || product.slug;
-            product.tags = tags || product.tags;
+            product.materials = materials || product.materials;
             product.categories = categories || product.categories;
             if (Array.isArray(req.files) && req.files.length > 0) {
                 // Remove existing files before updating if there are new files
@@ -72,7 +73,7 @@ const updateProduct = async (req, res, next) => {
 
 const deleteProduct = async (req, res, next) => {
     try{
-        const product = await Product.findOne({ slug: req.params.slug });
+        const product = await Product.findOneAndDelete({ slug: req.params.slug });
 
         if (!product) {
             const error = new Error("Product aws not found");
@@ -80,7 +81,7 @@ const deleteProduct = async (req, res, next) => {
             return next(error);
         }
 
-        await product.remove();
+        product.delete({product: product._id});
     }
     catch(error){
         next(error);
