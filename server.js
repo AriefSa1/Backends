@@ -19,7 +19,12 @@ dotenv.config();
 connectDB();
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'https://tokokuning.tech', // Ganti dengan domain frontend Anda
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  optionsSuccessStatus: 204,
+}));
 
 app.get("/", (req, res) => {
   res.send("Server is running...");
