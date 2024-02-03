@@ -1,8 +1,6 @@
 import { uploadPicture } from "../middleware/uploadPictureMiddleware";
 import Product from "../models/Product";
-import Comment from "../models/Comment";
-import { fileRemover } from "../utils/prodRemover";
-import { stringify, v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 
 const createProduct = async (req, res, next) => {
     try {
@@ -23,51 +21,65 @@ const createProduct = async (req, res, next) => {
 };
 
 const updateProduct = async (req, res, next) => {
-    try {
-        const product = await Product.findOne({ slug: req.params.slug });
+  try {
+    const product = await Product.findOne({ slug: req.params.slug });
 
-        if (!product) {
-            const error = new Error("Product aws not found");
-            next(error);
-            return;
+    if (!product) {
+      const error = new Error("Product not found");
+      next(error);
+      return;
+    }
+
+    const upload = uploadPicture.array("postPicture", 5);
+
+    const handleUpdateProduct = async (data) => {
+      try {
+        if (!data) {
+          throw new Error("Invalid data: Data is undefined or null");
         }
 
-        const upload = uploadPicture.array("postPicture", 5);
+        const { title, description, slug, materials, categories } = JSON.parse(data);
+        product.title = title || product.title;
+        product.descriptions = description || product.descriptions;
+        product.slug = slug || product.slug;
+        product.materials = materials || product.materials;
+        product.categories = categories || product.categories;
 
-        const handleUpdateProduct = async (data) => {
-            const { title, description, slug, materials, categories } = JSON.parse(data);
-            product.title = title || product.title;
-            product.descriptions = description || product.descriptions;
-            product.slug = slug || product.slug;
-            product.materials = materials || product.materials;
-            product.categories = categories || product.categories;
-            if (Array.isArray(req.files) && req.files.length > 0) {
-                // Remove existing files before updating if there are new files
-                await fileRemover(product.photo);
-                product.photo = req.files.map((file) => file.filename);
-              }
-
-            const updatedProduct = await product.save();
-            return res.json(updatedProduct);
+        if (Array.isArray(req.files) && req.files.length > 0) {
+          product.photo = req.files.map((file) => file.originalname);
         }
-        upload(req, res, async function (err) {
-            if (err) {
-              const error = new Error("An unknown error occurred when uploading " + err.message);
-              next(error);
-            } else {
-              if (req.file) {
-                await fileRemover(product.photo);
-                product.photo = req.file.filename;
-                handleUpdateProduct(req.body.document);
-              } else {
-                // No new file uploaded, proceed with the update
-                handleUpdateProduct(req.body.document);
-              }
-            }
-          });
+
+        const updatedProduct = await product.save();
+        return res.json(updatedProduct);
+      } catch (error) {
+        throw new Error("Error parsing JSON data: " + error.message + data);
+      }
+    };
+
+    upload(req, res, async function (err) {
+      if (err) {
+        const error = new Error("An unknown error occurred when uploading " + err.message);
+        next(error);
+      } else {
+        try {
+          if (req.files && req.files.length > 0) {
+            // console.log("Files uploaded: ", req.files);
+
+            product.photo = req.files.map((file) => file.originalname);
+
+          } else {
+            return res.json(product);
+          }
+
+          await handleUpdateProduct(req.body.document);
         } catch (error) {
           next(error);
         }
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 

@@ -38,39 +38,53 @@ const updatePost = async (req, res, next) => {
     const upload = uploadPicture.single("postPicture");
 
     const handleUpdatePostData = async (data) => {
-      const { title, caption, slug, body, tags, categories } = JSON.parse(data);
-      post.title = title || post.title;
-      post.caption = caption || post.caption;
-      post.slug = slug || post.slug;
-      post.body = body || post.body;
-      post.tags = tags || post.tags;
-      post.categories = categories || post.categories;
-      const updatedPost = await post.save();
-      return res.json(updatedPost);
+      try {
+        if (!data) {
+          throw new Error("Invalid data: Data is undefined or null");
+        }
+
+        const { title, caption, slug, body, tags, categories } = JSON.parse(data);
+        post.title = title || post.title;
+        post.caption = caption || post.caption;
+        post.slug = slug || post.slug;
+        post.body = body || post.body;
+        post.tags = tags || post.tags;
+        post.categories = categories || post.categories;
+
+        if (req.body && req.body.postPicture) {
+          post.photo = req.body.postPicture;
+          console.log("FF: ", post.photo); // Use req.files instead of req.file
+        } else {
+          console.log("F: ", req.body.postPicture); // Use req.files instead of req.file
+        }
+
+        const updatedPost = await post.save();
+        console.log("UP: ", updatedPost);
+        return res.json(updatedPost);
+      } catch (error) {
+        next(error);
+      }
     };
 
     upload(req, res, async function (err) {
       if (err) {
         const error = new Error(
-          "An unknown error occured when uploading " + err.message
+          "An unknown error occurred when uploading " + err.message
         );
         next(error);
       } else {
-        // every thing went well
-        if (req.file) {
-          let filename;
-          filename = post.photo;
-          if (filename) {
-            fileRemover(filename);
+        try {
+          // everything went well
+          if (res.body) { // Use req.file instead of req.files
+            post.photo = res.body.postPicture;
+          } else {
+            // console.log("F: ", req); // Use req.files instead of req.file
+            post.photo = "";
           }
-          post.photo = req.file.filename;
-          handleUpdatePostData(req.body.document);
-        } else {
-          let filename;
-          filename = post.photo;
-          post.photo = "";
-          fileRemover(filename);
-          handleUpdatePostData(req.body.document);
+          await handleUpdatePostData(req.body.document);
+          // return res.json(post);
+        } catch (error) {
+          next(error);
         }
       }
     });
