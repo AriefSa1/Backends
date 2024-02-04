@@ -20,7 +20,7 @@ connectDB();
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: 'https://www.tokokuning.tech', // Ganti dengan domain frontend Anda
+  origin: 'https://syamsdev.online', // Ganti dengan domain frontend Anda
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   optionsSuccessStatus: 204,
