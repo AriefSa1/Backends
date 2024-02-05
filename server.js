@@ -20,7 +20,7 @@ connectDB();
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: '*', // Ganti dengan domain frontend Anda
+  origin: '*',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   optionsSuccessStatus: 204,

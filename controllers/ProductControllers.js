@@ -84,20 +84,23 @@ const updateProduct = async (req, res, next) => {
 
 
 const deleteProduct = async (req, res, next) => {
-    try{
-        const product = await Product.findOneAndDelete({ slug: req.params.slug });
+  try{
+      const product = await Product.findOneAndDelete({ slug: req.params.slug });
 
-        if (!product) {
-            const error = new Error("Product aws not found");
-            next(error);
-            return next(error);
-        }
+      if (!product) {
+          const error = new Error("Product aws not found");
+          next(error);
+          return next(error);
+      }
 
-        product.delete({product: product._id});
-    }
-    catch(error){
-        next(error);
-    }
+      product.delete({product: product._id});
+      return res.json({
+        message: "Product is successfully deleted",
+      });
+  }
+  catch(error){
+      next(error);
+  }
 };
 
 const getProduct = async (req, res, next) => {
