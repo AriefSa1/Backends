@@ -50,6 +50,7 @@ const updateProduct = async (req, res, next) => {
         }
 
         const updatedProduct = await product.save();
+        console.log("Updated product: ", updatedProduct);
         return res.json(updatedProduct);
       } catch (error) {
         throw new Error("Error parsing JSON data: " + error.message + data);

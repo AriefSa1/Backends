@@ -36,8 +36,10 @@ const updatePost = async (req, res, next) => {
     }
 
     const upload = uploadPicture.single("postPicture");
-
+    
+    console.log("Request body: ", req.body.document);
     const handleUpdatePostData = async (data) => {
+      console.log("DATA: ", JSON.parse(data))
       try {
         if (!data) {
           throw new Error("Invalid data: Data is undefined or null");

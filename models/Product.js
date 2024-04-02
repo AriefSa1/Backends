@@ -19,11 +19,11 @@ const ProductSchema = new Schema(
 );
 
 
-ProductSchema.virtual("comments", {
-  ref: "Comment",
-  localField: "_id",
-  foreignField: "products",
-});
+// ProductSchema.virtual("comments", {
+//   ref: "Comment",
+//   localField: "_id",
+//   foreignField: "products",
+// });
 
 const Product = model("Products", ProductSchema);
 export default Product;
