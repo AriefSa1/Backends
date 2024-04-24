@@ -3,9 +3,8 @@ import Post from "../models/Post";
 
 const createPostCategory = async (req, res, next) => {
   try {
-    const { title } = req.body;
-
-    const postCategory = await PostCategories.findOne({ title });
+    const { category } = req.body;
+    const postCategory = await PostCategories.findOne({ category });
 
     if (postCategory) {
       const error = new Error("Category is already created!");
@@ -13,7 +12,7 @@ const createPostCategory = async (req, res, next) => {
     }
 
     const newPostCategory = new PostCategories({
-      title,
+      category,
     });
 
     const savedPostCategory = await newPostCategory.save();
