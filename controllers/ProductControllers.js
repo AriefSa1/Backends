@@ -43,7 +43,7 @@ const updateProduct = async (req, res, next) => {
         product.descriptions = description || product.descriptions;
         product.slug = slug || product.slug;
         product.materials = materials || product.materials;
-        product.categories = categories[0] || product.categories;
+        product.categories = categories || product.categories;
 
         if (Array.isArray(req.files) && req.files.length > 0) {
           product.photo = req.files.map((file) => file.originalname);
