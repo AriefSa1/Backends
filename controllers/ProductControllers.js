@@ -46,11 +46,13 @@ const updateProduct = async (req, res, next) => {
         product.categories = categories || product.categories;
 
         if (Array.isArray(req.files) && req.files.length > 0) {
+          req.files.map((file) => console.log("SUSU", file));
           product.photo = req.files.map((file) => file.originalname);
+        } else {
+          product.photo = req.body.postPicture;
         }
 
         const updatedProduct = await product.save();
-        console.log("Updated product: ", updatedProduct);
         return res.json(updatedProduct);
       } catch (error) {
         throw new Error("Error parsing JSON data: " + error.message + data);
@@ -63,15 +65,13 @@ const updateProduct = async (req, res, next) => {
         next(error);
       } else {
         try {
-          if (req.files && req.files.length > 0) {
-            // console.log("Files uploaded: ", req.files);
-
+          if (req.files) {
+            req.files.map((file) => console.log("SUSU1", file));
             product.photo = req.files.map((file) => file.originalname);
-
           } else {
+            product.photo = req.body.postPicture;
             return res.json(product);
           }
-
           await handleUpdateProduct(req.body.document);
         } catch (error) {
           next(error);
@@ -130,13 +130,6 @@ const getProduct = async (req, res, next) => {
 };
 
 const getAllProducts = async (req, res, next) => {
-    // try {
-    //     const products = await Product.find();
-
-    //     return res.json(products);
-    // } catch (error) {
-    //     next(error);
-    // }
     try {
         const filter = req.query.searchKeyword;
         let where = {};
