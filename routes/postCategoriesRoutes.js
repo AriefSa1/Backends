@@ -5,6 +5,7 @@ import {
   deletePostCategory,
   getAllPostCategories,
   updatePostCategory,
+  getCategory,
 } from "../controllers/postCategoriesController";
 import { adminGuard, authGuard } from "../middleware/authMiddleware";
 
@@ -16,6 +17,7 @@ router
 router
   .route("/:postCategoryId")
   .put(authGuard, adminGuard, updatePostCategory)
-  .delete(authGuard, adminGuard, deletePostCategory);
+  .delete(authGuard, adminGuard, deletePostCategory)
+  .get(getCategory);
 
 export default router;

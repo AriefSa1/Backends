@@ -97,4 +97,5 @@ export {
   getAllPostCategories,
   updatePostCategory,
   deletePostCategory,
+  getCategory,
 };
